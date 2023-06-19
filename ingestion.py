@@ -55,9 +55,12 @@ def merge_multiple_dataframe():
     #save the output file "finaldata.csv" in the output_folder_path
     finaldata.to_csv(os.path.join(output_folder_path,'finaldata.csv'), index=False)
 
-    #save ingested files with timestamp
+    #save ingested files
     with open(os.path.join(output_folder_path, 'ingestedfiles.txt'), "w") as f:
         f.write(str(ingestedfiles)) 
+        for line in ingestedfiles:
+            f.write(line + "\n")
+            
 
 if __name__ == '__main__':
     merge_multiple_dataframe()
