@@ -15,7 +15,6 @@ with open('config.json','r') as f:
     config = json.load(f) 
 
 model_path = os.path.join(config['output_model_path']) 
-test_data_path = os.path.join(config['test_data_path']) 
 
 
 #explanatory variables and target
@@ -23,7 +22,7 @@ features = ['lastmonth_activity', 'lastyear_activity', 'number_of_employees']
 target = 'exited'
 
 ################# Function for model scoring
-def score_model():
+def score_model(test_data_path=None):
     '''
     Take the trained model, load test data and calculate an F1 score for the model relative to the test data
     Write the result to the latestscore.txt file
@@ -37,8 +36,18 @@ def score_model():
         model = pickle.load(f)
 
     #load test data
-    df_test = pd.read_csv(os.path.join(test_data_path, 'testdata.csv'))
-    df_test = df_test.drop(columns=['corporation'])
+    if test_data_path is None:
+        test_data_path = os.path.join(config['test_data_path']) 
+        df_test = pd.read_csv(os.path.join(test_data_path, 'testdata.csv'))
+        df_test = df_test.drop(columns=['corporation'])
+    else:
+        df_test = pd.DataFrame()
+        filenames = os.listdir(os.path.join(os.getcwd(), test_data_path))
+        for each_filename in filenames:
+            #append if the file has a extension .csv
+            if each_filename.endswith(".csv"):
+                df = pd.read_csv(f'{os.getcwd()}/{test_data_path}/{each_filename}')
+                df_test=pd.concat([df_test, df])
 
     X_test = df_test[features]
     y_test = df_test[target]

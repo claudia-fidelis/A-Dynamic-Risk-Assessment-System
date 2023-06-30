@@ -14,12 +14,12 @@ import json
 with open('config.json','r') as f:
     config = json.load(f) 
 
-dataset_csv_path = os.path.join(config['output_folder_path']) 
+
 model_path = os.path.join(config['output_model_path']) 
 
 
 #################Function for training the model
-def train_model():
+def train_model(dataset_csv_path=None):
     '''
     Read in finaldata.csv using the pandas module. 
     Use the scikit-learn module to train a logistic regression model for churn classification.
@@ -34,8 +34,19 @@ def train_model():
     target = 'exited'
 
     # import dataset
-    filepath = os.path.join(dataset_csv_path, "finaldata.csv")
-    df = pd.read_csv(filepath)
+    if dataset_csv_path is None:
+        dataset_csv_path = os.path.join(config['output_folder_path']) 
+        filepath = os.path.join(dataset_csv_path, "finaldata.csv")
+        df = pd.read_csv(filepath)
+
+    else:
+        df = pd.DataFrame()
+        filenames = os.listdir(os.path.join(os.getcwd(), dataset_csv_path))
+        for each_filename in filenames:
+            #append if the file has a extension .csv
+            if each_filename.endswith(".csv"):
+                data = pd.read_csv(f'{os.getcwd()}/{dataset_csv_path}/{each_filename}')
+                df = pd.concat([df, data])
 
     X = df[features]
     y = df[target]
